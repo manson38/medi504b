@@ -1,0 +1,23 @@
+---
+title: "PCOS_ExploratoryDataAnalysis"
+author: "Matt"
+date: "2023-01-11"
+output: html_document
+---
+
+### Libraries
+```{r}
+library(tidyverse)
+```
+
+### Import Dataset
+
+```{r}
+PCOSData <- read_csv("Week 1/Lab/PCOS_infertility.csv")
+```
+```{r}
+PCOSData
+```
+
+
+
