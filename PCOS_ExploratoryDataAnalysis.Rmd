@@ -62,7 +62,15 @@ We have two tibbles containing data collected from 541 unique individuals. The f
 (PCOSDataFull <- PCOSDataWithoutInfertility)
 ```
 
-Great. The tibble above, `PCOSDataFull`, contains all the data we have been provided. Let's clean up the variable names and types before going any further.
+Great. The tibble above, `PCOSDataFull`, contains all the data we have been provided. Lets check if there is any missing data:
+
+```{r}
+plot_missing(PCOSDataFull)
+```
+
+Just the empty ...45 column is missing lots of data. We can omit this in the next code chunk. 
+
+Let's clean up the variable names and types before going any further.
 
 
 ### Clean Variable names and review their type
@@ -82,10 +90,20 @@ Great. Now we have a tibble that's been cleaned up a bit. It looks pretty clean 
 levels(PCOSDataFull$`Blood Group`)
 ```
 
+Lets recode this... keep in mind that the documentation for the data, found here: https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download&select=PCOS_data_without_infertility.xlsx, specifies the following mappings: 
+
+`A+` = "11", 
+`A-` = "12",
+`B+` = "13",
+`B-` = "14",
+`O+` = "15",
+`O-` = "16",
+`AB+` = "17",
+`AB-` = "18"
 
 ```{r}
-PCOSDataFull %>% 
-  fct_recode(`Blood Group`, 
+PCOSDataFull <- PCOSDataFull %>% 
+  mutate(`Blood Group` = fct_recode(`Blood Group`, 
              `A+` = "11", 
              `A-` = "12",
              `B+` = "13",
@@ -93,10 +111,7 @@ PCOSDataFull %>%
              `O+` = "15",
              `O-` = "16",
              `AB+` = "17",
-             `AB-` = "18")
+             `AB-` = "18"))
 ```
 
-```{r}
-plot_missing(PCOSDataFull)
-```
 
