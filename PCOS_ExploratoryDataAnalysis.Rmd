@@ -8,16 +8,95 @@ output: html_document
 ### Libraries
 ```{r}
 library(tidyverse)
+library(readxl)
+library(DataExplorer)
+library(janitor)
 ```
 
-### Import Dataset
+This should be in a report format with the following TOC (we will build on this as we go):
+
+1- Introduction and Background
+
+2- Objectives
+
+3- Methods
+
+4- Results
+
+4a) Exploratory data analysis
+
+5- Supplementary information
+
+5a) Data dictionnary
+
+
+### Import Datasets
 
 ```{r}
 PCOSData <- read_csv("Week 1/Lab/PCOS_infertility.csv")
+PCOSDataWithoutInfertility <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx", 
+                                        sheet = "Full_new")
 ```
+
+
+### Look at Data
+
 ```{r}
-PCOSData
+#PCOSData
+PCOSData #look at the tibble
+dim(PCOSData) #dimensions of the tibble
+n_distinct(PCOSData$`Patient File No.`) #number of distinct patients - to confirm there are no repeats
+
+#PCOSDataWithoutInfertility
+PCOSDataWithoutInfertility 
+dim(PCOSDataWithoutInfertility)
+n_distinct(PCOSDataWithoutInfertility$`Patient File No.`)
+```
+
+We have two tibbles containing data collected from 541 unique individuals. The first tibble, `PCOSData`, contains information related to the individuals Polycystic Ovary Syndrome Status and more. The second tibble `PCOSDataWithoutInfertility` contains all data found in PCOSData, as well as 39 other variables (for a total of 45). For this reason, I will assign the data contained in `PCOSDataWithoutInfertility` to a variable named `PCOSDataFULL`. 
+
+
+### Rename PCOSDataWithoutInfertility
+
+```{r}
+(PCOSDataFull <- PCOSDataWithoutInfertility)
+```
+
+Great. The tibble above, `PCOSDataFull`, contains all the data we have been provided. Let's clean up the variable names and types before going any further.
+
+
+### Clean Variable names and review their type
+
+```{r}
+(PCOSDataFull <- PCOSDataFull %>% 
+  select(-...45) %>%  #removing the 45th variable/column, as no data was present
+  mutate_at(c("PCOS (Y/N)", "Blood Group", "Pregnant(Y/N)", "Weight gain(Y/N)", "hair growth(Y/N)", 
+              "Skin darkening (Y/N)", "Hair loss(Y/N)", "Pimples(Y/N)", 
+              "Fast food (Y/N)", "Reg.Exercise(Y/N)"), 
+            factor))
+```
+
+Great. Now we have a tibble that's been cleaned up a bit. It looks pretty clean and all variable types are relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column. 
+
+```{r}
+levels(PCOSDataFull$`Blood Group`)
 ```
 
 
+```{r}
+PCOSDataFull %>% 
+  fct_recode(`Blood Group`, 
+             `A+` = "11", 
+             `A-` = "12",
+             `B+` = "13",
+             `B-` = "14",
+             `O+` = "15",
+             `O-` = "16",
+             `AB+` = "17",
+             `AB-` = "18")
+```
+
+```{r}
+plot_missing(PCOSDataFull)
+```
 
