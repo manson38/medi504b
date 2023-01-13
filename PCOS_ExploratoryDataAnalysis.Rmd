@@ -5,31 +5,36 @@ date: "2023-01-11"
 output: html_document
 ---
 
-### Libraries
+
+# Introduction 
+Incomplete
+
+# Background
+Incomplete
+
+# Objective
+Utilize the publicly available [Polycystic Ovary Syndrome (PCOS) Dataset found on Kaggle](https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download) to propose a model to diagnose PCOS using techniques and concepts covered in MEDI 504B at the University of British Columbia (UBC).  
+
+# Methods
+Incomplete
+
+# Results
+Incomplete
+
+## Exploratory Data Analysis
+
+### Load Required Libraries
 ```{r}
+
 library(tidyverse)
 library(readxl)
 library(DataExplorer)
 library(janitor)
+
 ```
 
-1- Introduction and Background
 
-2- Objectives
-
-3- Methods
-
-4- Results
-
-4a) Exploratory data analysis
-
-5- Supplementary information
-
-5a) Data dictionnary
-
-
-### Import Datasets
-
+### Import Dataset
 ```{r, message=FALSE}
 PCOSData <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx", 
                                         sheet = "Full_new")
@@ -37,31 +42,32 @@ PCOSData <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx",
 
 
 ### Look at Data
-
 ```{r}
 
 #PCOSData
-PCOSData 
-dim(PCOSData)
-n_distinct(PCOSData$`Patient File No.`)
+PCOSData # look at the full dataset in raw form
+dim(PCOSData) # dataset dimensions
+n_distinct(PCOSData$`Patient File No.`) # confirming that there are no repeated patient file numbers
 
 ```
 
 We have a tibble, `PCOSData`, containing data collected from 541 unique individuals. This tibble contains data relevant to infertility, each individuals Polycystic Ovary Syndrome Status and much more. A total of 45 variables are present. 
 
+With a quick scan, `PCOSData` looks very complete, other than the column named `...45`. Let's do a more formal check to understand missing data counts...
 
-With a quick scan, `PCOSData` looks very complete, other than the column named `...45`. Let's do a more formal check to understand missing data counts:
 
-```{r}
+### Checking Data Completeness
+
+```{r, fig.height=7, fig.width=8}
+
 plot_missing(PCOSData)
+
 ```
 
-Great. We can see that, as expected based on initial observations, the `...45` column is missing lots of data (nearly empty!). We can omit this in the next code chunk using select(). There is also very minimally missing data (1 observation) in the columns `Fast food (Y/N)` and `Marraige Status (Yrs)` (only 0.18% missing). I'll drop the rows with these missing observations. 
+Great. We can see that, as expected based on initial observations, the `...45` column is missing lots of data (nearly empty!). We can omit this in the next code chunk using select(). There is also very minimally missing data (1 observation/541, 0.18%) in the columns `Fast food (Y/N)` and `Marraige Status (Yrs)` (only 0.18% missing). I'll drop the rows with these missing observations, too. Let's also clean up the variable types before going any further.
 
-Let's also clean up the variable types before going any further.
 
 ### Drop Missing Values, Review Variable Types
-
 ```{r}
 (PCOSDataCLEAN <- PCOSData %>% 
   select(-...45) %>%  #removing the 45th variable/column, as no data was present
@@ -76,13 +82,13 @@ Let's also clean up the variable types before going any further.
 dim(PCOSDataCLEAN)
 ```
 
-Great. Now we have a tibble that's clean and contains complete observations for 539 unique individuals. All variable types are also relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column, which are currently represented by a number code. 
+Great. Now we have a tibble that's clean and contains complete observations for 539 unique individuals. All variable types are also relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column, which are currently represented by a number code. I will also correct the number formatting in the `FSH/LH` column. 
 
 ```{r}
 levels(PCOSDataCLEAN$`Blood Group`)
 ```
 
-Lets recode this... keep in mind that the documentation for the data, found here: https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download&select=PCOS_data_without_infertility.xlsx, specifies the following mappings: 
+Lets recode this... keep in mind that the documentation for the data, found [here](https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download&select=PCOS_data_without_infertility.xlsx), specifies the following mappings: 
 
 `A+` = "11", 
 `A-` = "12",
@@ -110,13 +116,23 @@ PCOSDataCLEAN <- PCOSDataCLEAN %>%
 PCOSDataCLEAN
 ```
 
-Awesome, this tibble is looking great. Lets explore some more! Yulia was kind enough to introduce our class to the DataExplorer Package. Let's test it out!
+Awesome, this tibble is looking clean. Lets explore some more! Yulia was kind enough to introduce our class to the DataExplorer Package. Let's test it out!
 
-
+### Using the DataExplorer Package to Explore the Cleaned Data
 
 ```{r}
 
+
+# create_report(PCOSDataCLEAN)
 ```
 
+
+
+
+# Supplementary Information
+Incomplete
+
+# Data Dictionary
+Incomplete
 
 
