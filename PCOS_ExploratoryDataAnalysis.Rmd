@@ -30,7 +30,7 @@ library(janitor)
 
 ### Import Datasets
 
-```{r}
+```{r, message=FALSE}
 PCOSData <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx", 
                                         sheet = "Full_new")
 ```
