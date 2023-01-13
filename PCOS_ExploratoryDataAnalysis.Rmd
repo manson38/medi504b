@@ -13,8 +13,6 @@ library(DataExplorer)
 library(janitor)
 ```
 
-This should be in a report format with the following TOC (we will build on this as we go):
-
 1- Introduction and Background
 
 2- Objectives
@@ -33,8 +31,7 @@ This should be in a report format with the following TOC (we will build on this 
 ### Import Datasets
 
 ```{r}
-PCOSData <- read_csv("Week 1/Lab/PCOS_infertility.csv")
-PCOSDataWithoutInfertility <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx", 
+PCOSData <- read_xlsx("Week 1/Lab/PCOS_data_without_infertility.xlsx", 
                                         sheet = "Full_new")
 ```
 
@@ -42,52 +39,47 @@ PCOSDataWithoutInfertility <- read_xlsx("Week 1/Lab/PCOS_data_without_infertilit
 ### Look at Data
 
 ```{r}
+
 #PCOSData
-PCOSData #look at the tibble
-dim(PCOSData) #dimensions of the tibble
-n_distinct(PCOSData$`Patient File No.`) #number of distinct patients - to confirm there are no repeats
+PCOSData 
+dim(PCOSData)
+n_distinct(PCOSData$`Patient File No.`)
 
-#PCOSDataWithoutInfertility
-PCOSDataWithoutInfertility 
-dim(PCOSDataWithoutInfertility)
-n_distinct(PCOSDataWithoutInfertility$`Patient File No.`)
 ```
 
-We have two tibbles containing data collected from 541 unique individuals. The first tibble, `PCOSData`, contains information related to the individuals Polycystic Ovary Syndrome Status and more. The second tibble `PCOSDataWithoutInfertility` contains all data found in PCOSData, as well as 39 other variables (for a total of 45). For this reason, I will assign the data contained in `PCOSDataWithoutInfertility` to a variable named `PCOSDataFULL`. 
+We have a tibble, `PCOSData`, containing data collected from 541 unique individuals. This tibble contains data relevant to infertility, each individuals Polycystic Ovary Syndrome Status and much more. A total of 45 variables are present. 
 
 
-### Rename PCOSDataWithoutInfertility
+With a quick scan, `PCOSData` looks very complete, other than the column named `...45`. Let's do a more formal check to understand missing data counts:
 
 ```{r}
-(PCOSDataFull <- PCOSDataWithoutInfertility)
+plot_missing(PCOSData)
 ```
 
-Great. The tibble above, `PCOSDataFull`, contains all the data we have been provided. Lets check if there is any missing data:
+Great. We can see that, as expected based on initial observations, the `...45` column is missing lots of data (nearly empty!). We can omit this in the next code chunk using select(). There is also very minimally missing data (1 observation) in the columns `Fast food (Y/N)` and `Marraige Status (Yrs)` (only 0.18% missing). I'll drop the rows with these missing observations. 
+
+Let's also clean up the variable types before going any further.
+
+### Drop Missing Values, Review Variable Types
 
 ```{r}
-plot_missing(PCOSDataFull)
-```
-
-Just the empty ...45 column is missing lots of data. We can omit this in the next code chunk. 
-
-Let's clean up the variable names and types before going any further.
-
-
-### Clean Variable names and review their type
-
-```{r}
-(PCOSDataFull <- PCOSDataFull %>% 
+(PCOSDataCLEAN <- PCOSData %>% 
   select(-...45) %>%  #removing the 45th variable/column, as no data was present
+  drop_na() %>% #removing remaining rows with N/A's (i.e. the two rows missing fast food and marriage status observations)
+   
+   #convert categorical variables to factor type
   mutate_at(c("PCOS (Y/N)", "Blood Group", "Pregnant(Y/N)", "Weight gain(Y/N)", "hair growth(Y/N)", 
               "Skin darkening (Y/N)", "Hair loss(Y/N)", "Pimples(Y/N)", 
               "Fast food (Y/N)", "Reg.Exercise(Y/N)"), 
             factor))
+
+dim(PCOSDataCLEAN)
 ```
 
-Great. Now we have a tibble that's been cleaned up a bit. It looks pretty clean and all variable types are relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column. 
+Great. Now we have a tibble that's clean and contains complete observations for 539 unique individuals. All variable types are also relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column, which are currently represented by a number code. 
 
 ```{r}
-levels(PCOSDataFull$`Blood Group`)
+levels(PCOSDataCLEAN$`Blood Group`)
 ```
 
 Lets recode this... keep in mind that the documentation for the data, found here: https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download&select=PCOS_data_without_infertility.xlsx, specifies the following mappings: 
@@ -102,7 +94,9 @@ Lets recode this... keep in mind that the documentation for the data, found here
 `AB-` = "18"
 
 ```{r}
-PCOSDataFull <- PCOSDataFull %>% 
+PCOSDataCLEAN <- PCOSDataCLEAN %>% 
+  
+  #recoding factor levels
   mutate(`Blood Group` = fct_recode(`Blood Group`, 
              `A+` = "11", 
              `A-` = "12",
@@ -112,6 +106,17 @@ PCOSDataFull <- PCOSDataFull %>%
              `O-` = "16",
              `AB+` = "17",
              `AB-` = "18"))
+
+PCOSDataCLEAN
 ```
 
-Awesome, this tibble is looking great. 
+Awesome, this tibble is looking great. Lets explore some more! Yulia was kind enough to introduce our class to the DataExplorer Package. Let's test it out!
+
+
+
+```{r}
+
+```
+
+
+
