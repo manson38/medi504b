@@ -64,7 +64,7 @@ plot_missing(PCOSData)
 
 ```
 
-Great. We can see that, as expected based on initial observations, the `...45` column is missing lots of data (nearly empty!). We can omit this in the next code chunk using select(). There is also very minimally missing data (1 observation/541, 0.18%) in the columns `Fast food (Y/N)` and `Marraige Status (Yrs)` (only 0.18% missing). I'll drop the rows with these missing observations, too. Let's also clean up the variable types before going any further.
+Great. We can see that, as expected based on initial observations, the `...45` column is missing lots of data (nearly empty!). We can omit this in the next code chunk using select(). There is also very minimally missing data (1 observation/541, 0.18%) in the columns `Fast food (Y/N)` and `Marraige Status (Yrs)` (only 0.18% missing). I'll drop the rows with these missing observations, too. Let's also clean up the variable names and types before going any further.
 
 
 ### Drop Missing Values, Review Variable Types
@@ -77,15 +77,18 @@ Great. We can see that, as expected based on initial observations, the `...45` c
   mutate_at(c("PCOS (Y/N)", "Blood Group", "Pregnant(Y/N)", "Weight gain(Y/N)", "hair growth(Y/N)", 
               "Skin darkening (Y/N)", "Hair loss(Y/N)", "Pimples(Y/N)", 
               "Fast food (Y/N)", "Reg.Exercise(Y/N)"), 
-            factor))
+            factor) %>% 
+  
+  #cleaning up variable names for consistency
+  clean_names())
 
 dim(PCOSDataCLEAN)
 ```
 
-Great. Now we have a tibble that's clean and contains complete observations for 539 unique individuals. All variable types are also relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column, which are currently represented by a number code. I will also correct the number formatting in the `FSH/LH` column. 
+Great. Now we have a tibble that's clean and contains complete observations for 539 unique individuals. All variable types are also relevant. One other thing that would be good to do is re-code the factor levels in the `Blood Type` column, which are currently represented by a number code. I will also correct the number formatting in the `FSH/LH` column by recalculating the ratio.
 
 ```{r}
-levels(PCOSDataCLEAN$`Blood Group`)
+levels(PCOSDataCLEAN$blood_group)
 ```
 
 Lets recode this... keep in mind that the documentation for the data, found [here](https://www.kaggle.com/datasets/prasoonkottarathil/polycystic-ovary-syndrome-pcos?resource=download&select=PCOS_data_without_infertility.xlsx), specifies the following mappings: 
@@ -103,7 +106,7 @@ Lets recode this... keep in mind that the documentation for the data, found [her
 PCOSDataCLEAN <- PCOSDataCLEAN %>% 
   
   #recoding factor levels
-  mutate(`Blood Group` = fct_recode(`Blood Group`, 
+  mutate(blood_group = fct_recode(blood_group, 
              `A+` = "11", 
              `A-` = "12",
              `B+` = "13",
@@ -121,9 +124,17 @@ Awesome, this tibble is looking clean. Lets explore some more! Yulia was kind en
 ### Using the DataExplorer Package to Explore the Cleaned Data
 
 ```{r}
+plot_str(PCOSDataCLEAN) #reviewing variable types and dataset dimension
 
+plot_missing(PCOSDataCLEAN) #confirming our data cleaning efforts above were a success
 
-# create_report(PCOSDataCLEAN)
+plot_histogram(PCOSDataCLEAN) #visualizing distributions of continuous variables
+
+plot_correlation(PCOSDataCLEAN)
+
+plot_bar(PCOSDataCLEAN) #visualizing categorical variable frequency
+
+# create_report(PCOSDataCLEAN) # a useful collection of all the above features!!!
 ```
 
 
